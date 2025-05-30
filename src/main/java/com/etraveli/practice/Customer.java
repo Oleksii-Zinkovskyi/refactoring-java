@@ -1,3 +1,5 @@
+package com.etraveli.practice;
+
 import java.util.List;
 
 public class Customer {

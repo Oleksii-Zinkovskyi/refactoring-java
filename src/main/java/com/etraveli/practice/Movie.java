@@ -1,3 +1,5 @@
+package com.etraveli.practice;
+
 public class Movie {
     private String title;
     private String code;
