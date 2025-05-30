@@ -1,52 +1,51 @@
 package com.etraveli.practice.service;
 
 import com.etraveli.practice.dto.Customer;
-import com.etraveli.practice.dto.Movie;
+import com.etraveli.practice.dto.MovieEnum;
 import com.etraveli.practice.dto.MovieRental;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
 
 @Service
 public class RentalInfoService {
 
   public String statement(Customer customer) {
-    HashMap<String, Movie> movies = new HashMap();
-    movies.put("F001", new Movie("You've Got Mail", "regular"));
-    movies.put("F002", new Movie("Matrix", "regular"));
-    movies.put("F003", new Movie("Cars", "childrens"));
-    movies.put("F004", new Movie("Fast & Furious X", "new"));
-
+    MovieEnum movie;
     double totalAmount = 0;
     int frequentEnterPoints = 0;
-    String result = "Rental Record for " + customer.getName() + "\n";
-    for (MovieRental r : customer.getRentals()) {
+    String result = "Rental Record for " + customer.name() + "\n";
+    for (MovieRental r : customer.rentals()) {
+      try {
+        movie = MovieEnum.valueOf(r.movieId());
+      } catch (IllegalArgumentException e) {
+        //There could be sophisticated logic for handling this wherein we set an error flag but proceed with the rest of the rentals
+        throw new IllegalArgumentException("Invalid movie ID: " + r.movieId());
+      }
       double thisAmount = 0;
 
       // determine amount for each movie
-      if (movies.get(r.getMovieId()).getCode().equals("regular")) {
+      if (movie.getCode().equals("regular")) {
         thisAmount = 2;
-        if (r.getDays() > 2) {
-          thisAmount = ((r.getDays() - 2) * 1.5) + thisAmount;
+        if (r.days() > 2) {
+          thisAmount = ((r.days() - 2) * 1.5) + thisAmount;
         }
       }
-      if (movies.get(r.getMovieId()).getCode().equals("new")) {
-        thisAmount = r.getDays() * 3;
+      if (movie.getCode().equals("new")) {
+        thisAmount = r.days() * 3;
       }
-      if (movies.get(r.getMovieId()).getCode().equals("childrens")) {
+      if (movie.getCode().equals("childrens")) {
         thisAmount = 1.5;
-        if (r.getDays() > 3) {
-          thisAmount = ((r.getDays() - 3) * 1.5) + thisAmount;
+        if (r.days() > 3) {
+          thisAmount = ((r.days() - 3) * 1.5) + thisAmount;
         }
       }
 
       //add frequent bonus points
       frequentEnterPoints++;
       // add bonus for a two day new release rental
-      if (movies.get(r.getMovieId()).getCode() == "new" && r.getDays() > 2) frequentEnterPoints++;
+      if (movie.getCode() == "new" && r.days() > 2) frequentEnterPoints++;
 
       //print figures for this rental
-      result += "\t" + movies.get(r.getMovieId()).getTitle() + "\t" + thisAmount + "\n";
+      result += "\t" + movie.getTitle() + "\t" + thisAmount + "\n";
       totalAmount = totalAmount + thisAmount;
     }
     // add footer lines

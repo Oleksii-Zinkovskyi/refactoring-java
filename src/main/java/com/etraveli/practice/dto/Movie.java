@@ -1,20 +1,7 @@
 package com.etraveli.practice.dto;
 
-public class Movie {
-    private String title;
-    private String code;
+/*No longer required, but keeping this here just to demonstrate that no functionality has been lost.
+See MovieEnum.java toMovie() method for justification of this record's existence.*/
+public record Movie (String title, String code) {
 
-    public Movie(String title, String code) {
-
-        this.title = title;
-        this.code = code;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getCode() {
-        return code;
-    }
 }

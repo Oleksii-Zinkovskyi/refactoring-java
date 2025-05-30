@@ -1,19 +1,5 @@
 package com.etraveli.practice.dto;
 
-public class MovieRental {
-    private String movieId;
-    private int days;
+public record MovieRental (String movieId, int days) {
 
-    public MovieRental(String movieId, int days) {
-        this.movieId = movieId;
-        this.days = days;
-    }
-
-    public String getMovieId() {
-        return movieId;
-    }
-
-    public int getDays() {
-        return days;
-    }
 }

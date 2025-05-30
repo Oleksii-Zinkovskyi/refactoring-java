@@ -29,11 +29,11 @@ public class RentalInfoServiceTest {
         assertThat(result).isEqualTo(expected);
     }
 
-    //TODO: Obviously throwing NPEs is not a good practice, I am merely documenting the current behavior
     @Test
-    public void givenValidCustomerWithInvalidRental_whenGenerateStatement_thenThrowNPE() {
-        assertThrows(NullPointerException.class, () ->
+    public void givenValidCustomerWithInvalidRental_whenGenerateStatement_thenThrowIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 new RentalInfoService().statement(new Customer("C. U. Stomer", List.of(new MovieRental("WRONG", 3)))));
+        assertThat(exception.getMessage()).isEqualTo("Invalid movie ID: WRONG");
     }
 
     @Test
