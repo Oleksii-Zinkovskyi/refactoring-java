@@ -1,4 +1,4 @@
-package com.etraveli.practice;
+package com.etraveli.practice.dto;
 
 import java.util.List;
 

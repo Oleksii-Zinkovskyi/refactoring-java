@@ -1,8 +1,14 @@
-package com.etraveli.practice;
+package com.etraveli.practice.service;
+
+import com.etraveli.practice.dto.Customer;
+import com.etraveli.practice.dto.Movie;
+import com.etraveli.practice.dto.MovieRental;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 
-public class RentalInfo {
+@Service
+public class RentalInfoService {
 
   public String statement(Customer customer) {
     HashMap<String, Movie> movies = new HashMap();
@@ -49,4 +55,5 @@ public class RentalInfo {
 
     return result;
   }
+
 }

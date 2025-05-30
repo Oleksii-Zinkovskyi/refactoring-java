@@ -1,4 +1,4 @@
-package com.etraveli.practice;
+package com.etraveli.practice.dto;
 
 public class MovieRental {
     private String movieId;
