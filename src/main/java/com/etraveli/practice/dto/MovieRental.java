@@ -4,6 +4,6 @@ import lombok.NonNull;
 
 public record MovieRental (
         @NonNull String movieId,
-        @NonNull Integer days) {
+        @NonNull Integer daysRented) {
 
 }

@@ -2,8 +2,8 @@ package com.etraveli.practice.dto;
 
 import lombok.NonNull;
 
-public record RentalOwedAmount(
+public record MovieRentalDebtRecord(
         @NonNull String movieTitle,
-        @NonNull Double owedAmount) {
+        @NonNull Double debtOwedForTitle) {
 
 }

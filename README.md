@@ -58,7 +58,7 @@ TODO/If it was a "real" project and I had more time:
 - Test Suits and better test syntax. Consider merging and parametrizing some tests.
 - Logging to track program's execution (not that there is much to track here).
 - Provide solution as a Docker image for ease of run on different systems. I feel like it may be an overkill for this one, and I don't want to complicate running it on your end.
-
+- Obviously if this were to be a real service, then we'd need a DB to store customers and rentals, and a proper API to interact with it. But this falls into the "don't take too long" category.
 
 P.S.  
 In real projects, we likely wouldn't use the "latest and greatest" versions of library dependencies as they may be unstable.

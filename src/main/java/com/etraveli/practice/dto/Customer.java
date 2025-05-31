@@ -6,6 +6,6 @@ import java.util.List;
 
 public record Customer (
         @NonNull String name,
-        @NonNull List<MovieRental> rentals) {
+        @NonNull List<MovieRental> movieRentals) {
 
 }

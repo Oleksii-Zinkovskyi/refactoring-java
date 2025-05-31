@@ -2,9 +2,9 @@ package com.etraveli.practice.service;
 
 import com.etraveli.practice.dto.Customer;
 import com.etraveli.practice.dto.MovieRental;
-import com.etraveli.practice.dto.RentalInfoOutput;
-import com.etraveli.practice.dto.RentalOwedAmount;
-import com.etraveli.practice.helper.RentalInfoFormatter;
+import com.etraveli.practice.dto.MovieRentalInfoOutput;
+import com.etraveli.practice.dto.MovieRentalDebtRecord;
+import com.etraveli.practice.formatter.RentalInfoFormatter;
 import com.etraveli.practice.service.impl.RentalInfoServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-//TODO: Add stress tests with many records per person, verify concurrent execution ordering
+/* P.S. Now that helper methods are exposed and tested separately, many of these tests are somewhat of an overkill*/
 public class RentalInfoServiceTest {
 
     @Mock
@@ -48,9 +48,6 @@ public class RentalInfoServiceTest {
         }
     }
 
-    /* P.S. We could declare private methods of the RentalInfoService as @VisibleForTesting and make them protected to allow for UnitTesting, but I think it isn't worth it
-     * So this is where tests for processOwedAmountForRecord and processFrequentEnterPoints would go if we did that. It is bad practice, however, so I will refactor it.*/
-
     @Test
     public void givenValidCustomerAndFirstSetOfRentals_whenGenerateStatement_thenReturnRentalInfoOutput() {
         Customer customer = new Customer("C. U. Stomer", Arrays.asList(new MovieRental("F001", 3), new MovieRental("F002", 1)));
@@ -58,11 +55,11 @@ public class RentalInfoServiceTest {
         rentalInfoService.generateStatementForCustomer(customer);
 
         verify(rentalInfoFormatter, times(1)).formatOutput(
-                RentalInfoOutput.builder()
+                MovieRentalInfoOutput.builder()
                         .customerName("C. U. Stomer")
-                        .rentalDebtRecords(List.of(new RentalOwedAmount("You've Got Mail", 3.5), new RentalOwedAmount("Matrix", 2.0)))
-                        .totalOwedAmount(5.5)
-                        .totalPoints(2)
+                        .movieRentalDebtRecords(List.of(new MovieRentalDebtRecord("You've Got Mail", 3.5), new MovieRentalDebtRecord("Matrix", 2.0)))
+                        .totalDebtAmountOwed(5.5)
+                        .totalFrequentPoints(2)
                         .build());
     }
 
@@ -73,15 +70,15 @@ public class RentalInfoServiceTest {
         rentalInfoService.generateStatementForCustomer(customer);
 
         verify(rentalInfoFormatter, times(1)).formatOutput(
-                RentalInfoOutput.builder()
+                MovieRentalInfoOutput.builder()
                         .customerName("C. U. Stomer")
-                        .rentalDebtRecords(List.of(new RentalOwedAmount("Fast & Furious X", 3.0), new RentalOwedAmount("Cars", 1.5)))
-                        .totalOwedAmount(4.5)
-                        .totalPoints(2)
+                        .movieRentalDebtRecords(List.of(new MovieRentalDebtRecord("Fast & Furious X", 3.0), new MovieRentalDebtRecord("Cars", 1.5)))
+                        .totalDebtAmountOwed(4.5)
+                        .totalFrequentPoints(2)
                         .build());
     }
 
-    //Technically, a customer can rent two copies of the same movie, as unlikely as it may be
+    //Not knowing the business logic deeper (and not feeling like this justifies emailing you), I assume that a customer can rent multiple copies of the same movie
     @Test
     public void givenValidCustomerWithDuplicateRentals_whenGenerateStatement_thenReturnRentalInfoOutput() {
         Customer customer = new Customer("C. U. Stomer", Arrays.asList(new MovieRental("F001", 3), new MovieRental("F001", 7), new MovieRental("F003", 1)));
@@ -89,22 +86,41 @@ public class RentalInfoServiceTest {
         rentalInfoService.generateStatementForCustomer(customer);
 
         verify(rentalInfoFormatter, times(1)).formatOutput(
-                RentalInfoOutput.builder()
+                MovieRentalInfoOutput.builder()
                         .customerName("C. U. Stomer")
-                        .rentalDebtRecords(List.of(new RentalOwedAmount("You've Got Mail", 9.5), new RentalOwedAmount("You've Got Mail", 3.5), new RentalOwedAmount("Cars", 1.5)))
-                        .totalOwedAmount(14.5)
-                        .totalPoints(3)
+                        .movieRentalDebtRecords(List.of(new MovieRentalDebtRecord("You've Got Mail", 9.5), new MovieRentalDebtRecord("You've Got Mail", 3.5), new MovieRentalDebtRecord("Cars", 1.5)))
+                        .totalDebtAmountOwed(14.5)
+                        .totalFrequentPoints(3)
+                        .build());
+    }
+
+    @Test
+    public void givenValidCustomerWithManyRentals_whenGenerateStatement_thenReturnRentalInfoOutput() {
+        Customer customer = new Customer("C. U. Stomer", Arrays.asList(new MovieRental("F001", 3), new MovieRental("F001", 7), new MovieRental("F003", 1), new MovieRental("F003", 15), new MovieRental("F001", 7), new MovieRental("F003", 0), new MovieRental("F004", 70), new MovieRental("F003", 12), new MovieRental("F004", 1)));
+
+        rentalInfoService.generateStatementForCustomer(customer);
+
+        verify(rentalInfoFormatter, times(1)).formatOutput(
+                MovieRentalInfoOutput.builder()
+                        .customerName("C. U. Stomer")
+                        .movieRentalDebtRecords(List.of(new MovieRentalDebtRecord("Fast & Furious X", 210.0),
+                                new MovieRentalDebtRecord("Cars", 19.5), new MovieRentalDebtRecord("Cars", 15.0),
+                                new MovieRentalDebtRecord("You've Got Mail", 9.5), new MovieRentalDebtRecord("You've Got Mail", 9.5),
+                                new MovieRentalDebtRecord("You've Got Mail", 3.5), new MovieRentalDebtRecord("Fast & Furious X", 3.0),
+                                new MovieRentalDebtRecord("Cars", 1.5), new MovieRentalDebtRecord("Cars", 1.5)))
+                        .totalDebtAmountOwed(273.0)
+                        .totalFrequentPoints(10)
                         .build());
     }
 
     @Test
     public void givenValidCustomerWithInvalidRental_whenGenerateStatement_thenThrowException() {
-        Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("WRONG", 3)));
+        Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("InvalidID", 3)));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 rentalInfoService.generateStatementForCustomer(customer));
 
-        assertThat(exception.getMessage()).isEqualTo("Invalid movie ID: WRONG");
+        assertThat(exception.getMessage()).isEqualTo("Invalid movie ID: InvalidID");
     }
 
     @Test
@@ -114,11 +130,11 @@ public class RentalInfoServiceTest {
         rentalInfoService.generateStatementForCustomer(customer);
 
         verify(rentalInfoFormatter, times(1)).formatOutput(
-                RentalInfoOutput.builder()
+                MovieRentalInfoOutput.builder()
                         .customerName("C. U. Stomer")
-                        .rentalDebtRecords(List.of(new RentalOwedAmount("You've Got Mail", 2.0)))
-                        .totalOwedAmount(2.0)
-                        .totalPoints(1)
+                        .movieRentalDebtRecords(List.of(new MovieRentalDebtRecord("You've Got Mail", 2.0)))
+                        .totalDebtAmountOwed(2.0)
+                        .totalFrequentPoints(1)
                         .build());
     }
 
@@ -129,7 +145,7 @@ public class RentalInfoServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 rentalInfoService.generateStatementForCustomer(customer));
 
-        assertThat(exception.getMessage()).isEqualTo("Invalid rental record for F001, days value outside of bounds: -2147483648");
+        assertThat(exception.getMessage()).isEqualTo("Invalid rental record for F001, daysRented value outside of bounds: -2147483648");
     }
 
     @Test
@@ -139,7 +155,7 @@ public class RentalInfoServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 rentalInfoService.generateStatementForCustomer(customer));
 
-        assertThat(exception.getMessage()).isEqualTo("Invalid rental record for F001, days value outside of bounds: 2147483647");
+        assertThat(exception.getMessage()).isEqualTo("Invalid rental record for F001, daysRented value outside of bounds: 2147483647");
     }
 
     @Test
@@ -149,11 +165,11 @@ public class RentalInfoServiceTest {
         rentalInfoService.generateStatementForCustomer(customer);
 
         verify(rentalInfoFormatter, times(1)).formatOutput(
-                RentalInfoOutput.builder()
+                MovieRentalInfoOutput.builder()
                         .customerName("C. U. Stomer")
-                        .rentalDebtRecords(Collections.emptyList())
-                        .totalOwedAmount(0.0)
-                        .totalPoints(0)
+                        .movieRentalDebtRecords(Collections.emptyList())
+                        .totalDebtAmountOwed(0.0)
+                        .totalFrequentPoints(0)
                         .build());
     }
 
@@ -164,11 +180,11 @@ public class RentalInfoServiceTest {
         rentalInfoService.generateStatementForCustomer(customer);
 
         verify(rentalInfoFormatter, times(1)).formatOutput(
-                RentalInfoOutput.builder()
+                MovieRentalInfoOutput.builder()
                         .customerName("")
-                        .rentalDebtRecords(Collections.emptyList())
-                        .totalOwedAmount(0.0)
-                        .totalPoints(0)
+                        .movieRentalDebtRecords(Collections.emptyList())
+                        .totalDebtAmountOwed(0.0)
+                        .totalFrequentPoints(0)
                         .build());
     }
 
