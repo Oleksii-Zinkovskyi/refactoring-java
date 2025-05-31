@@ -1,5 +1,9 @@
 package com.etraveli.practice.dto;
 
-public record MovieRental (String movieId, int days) {
+import lombok.NonNull;
+
+public record MovieRental (
+        @NonNull String movieId,
+        @NonNull Integer days) {
 
 }

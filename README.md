@@ -41,6 +41,8 @@ From a quick glance, I see the following points for improvement:
 - Separate packages and better class&method names for clear logical separation.
 - A better gitignore to cover Intellij - (had to be done immediately for ease of commits).
 - Most of the data objects seem to be simple immutable Data classes, so we can redefine them as Records. They don't require testing.
+- Maven project with some quality of life and testing dependencies.
+- Turn it into a Spring project with dependency injection instead of creating stuff in Main through new().
 
 Most of the issues are in the RentalInfo class:
 - RentalInfo is a poor name for a service class and seems to also serve as a data class, and .statement is just poor naming -> separate Classes and communicate through Interfaces (new Interface + RentalService(new ToStringFormatter + Interface))?
@@ -52,14 +54,13 @@ Most of the issues are in the RentalInfo class:
 
 
 TODO/If it was a "real" project and I had more time:
-- Maven project with some quality of life and testing dependencies.
-- Turn it into a Spring project with dependency injection instead of creating stuff in Main through new().
 - Fluid validation for data objects (@NotNull being the most important)?
-- Test Suits and better test syntax.
-- Logging.
+- Test Suits and better test syntax. Consider merging and parametrizing some tests.
+- Logging to track program's execution (not that there is much to track here).
+- Provide solution as a Docker image for ease of run on different systems. I feel like it may be an overkill for this one, and I don't want to complicate running it on your end.
 
 
 P.S.  
-Since we aren't using Maven or Gradle, running and testing the project becomes quite straightforward! Nor do we need to Mock objects since we have no external dependencies or Beans. The lack of IoC/DI here is concerning, but for such a small project I suppose it isn't a deal-breaker.  
-I don't want to complicate this assignment by adding Maven just to get JUnit Suite, RunWith, and the likes, but if it was a real project with higher size&complexity of course I'd be utilizing those along with Spring, Mockito, and maybe Lombok.  
-That said, I'd be happy to demonstrate all these changes if you want me to!
+In real projects, we likely wouldn't use the "latest and greatest" versions of library dependencies as they may be unstable.
+
+TODO: Move these notes into a separate file!

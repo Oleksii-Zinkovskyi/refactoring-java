@@ -12,9 +12,15 @@ import java.util.Arrays;
 @SpringBootApplication(scanBasePackages = "com.etraveli.practice")
 public class RentalInfoApplication {
 
-  @Autowired
-  private RentalInfoService rentalInfoService;
+  private final RentalInfoService rentalInfoService;
 
+  @Autowired
+  public RentalInfoApplication(RentalInfoService rentalInfoServiceImpl) {
+    this.rentalInfoService = rentalInfoServiceImpl;
+  }
+
+  //TODO: Switch to some sort of generic consumer/supplier combo that would read this input from default properties?
+  //There really shouldn't be a call to test method in the main method, but I suppose it simulates user input in a way. Ideally we'd want to have a REST endpoint calling this
   public static void main(String[] args) {
     RentalInfoApplication rentalService = SpringApplication.run(RentalInfoApplication.class, args).getBean(RentalInfoApplication.class);
 
@@ -30,7 +36,7 @@ public class RentalInfoApplication {
   }
 
   private String generateStatement(Customer customer) {
-    return rentalInfoService.statement(customer);
+    return rentalInfoService.generateStatementForCustomer(customer);
   }
 
 }
