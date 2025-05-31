@@ -2,7 +2,7 @@ package com.etraveli.practice.dto;
 
 import lombok.NonNull;
 
-public record MovieRental (
+public record MovieRental(
         @NonNull String movieId,
         @NonNull Integer daysRented) {
 

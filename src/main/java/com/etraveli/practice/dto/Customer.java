@@ -4,7 +4,7 @@ import lombok.NonNull;
 
 import java.util.List;
 
-public record Customer (
+public record Customer(
         @NonNull String name,
         @NonNull List<MovieRental> movieRentals) {
 

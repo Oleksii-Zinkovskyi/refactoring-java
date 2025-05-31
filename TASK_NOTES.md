@@ -41,4 +41,4 @@ Most of the issues are in the RentalInfo class:
 - Logging (SLF4J + Log4j) to track program's execution (not that there is much to track here).
 - Test Suits and better test syntax. Consider merging and parametrizing some tests?
 - If we wanted to optimize performance for large operations (absolutely unnecessary in this task), we could replace the .parallelStream() that is utilizing the ForkJoinPool with a custom newVirtualThreadPerTaskExecutor(). However, this would complicate the loop and we'd need to enable preview features for it to run on Java 21 (which I was told is what you are using).
-- Use SonarQube + JaCoCo or something similar for code quality and test coverage, Jenkins for automatic build and test pipelines.
+- Use SonarQube + JaCoCo or something similar for code quality and test coverage, Jenkins for automatic build, test, and deployment pipelines.
