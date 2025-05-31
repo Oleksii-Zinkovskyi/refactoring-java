@@ -1,8 +1,7 @@
-package com.etraveli.practice.helper;
+package com.etraveli.practice.formatter;
 
 import com.etraveli.practice.dto.MovieRentalInfoOutput;
 import com.etraveli.practice.dto.MovieRentalDebtRecord;
-import com.etraveli.practice.formatter.RentalInfoFormatter;
 import com.etraveli.practice.formatter.impl.StringRentalInfoFormatter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

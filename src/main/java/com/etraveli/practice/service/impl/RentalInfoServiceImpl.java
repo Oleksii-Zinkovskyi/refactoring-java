@@ -34,8 +34,6 @@ public class RentalInfoServiceImpl implements RentalInfoService {
         AtomicInteger totalFrequentPoints = new AtomicInteger();
         List<MovieRentalDebtRecord> movieRentalDebtRecords = Collections.synchronizedList(new LinkedList<>());
 
-        //TODO: Switch this to virtual threads with a custom Executor?
-        //TODO: Verify for duplicate logic and control flows
         customer.movieRentals()
                 .parallelStream()
                 .forEach(movieRental -> {

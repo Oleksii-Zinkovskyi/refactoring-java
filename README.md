@@ -21,10 +21,19 @@ java -cp src Main
 ```
 
 ---
-## To run via Docker:
+## To build and run via the jar file in the target folder:
 
 ```
-TODO
+mvn clean package
+java -jar target\refactoring-java-1.0-SNAPSHOT.jar
+```
+
+## To build and run via Docker:
+
+```
+mvn clean package
+docker build -t movie-rental-info-app .
+docker run movie-rental-info-app
 ```
 
 ---
