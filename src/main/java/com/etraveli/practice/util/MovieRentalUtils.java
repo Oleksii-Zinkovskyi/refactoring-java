@@ -7,6 +7,12 @@ import com.etraveli.practice.validator.MovieRecordValidator;
 
 public class MovieRentalUtils {
 
+    /**
+     * Calculates the total debt owed for a movie rental based on the movie type and days rented.
+     *
+     * @param movieRental The movie rental details containing movie ID and days rented.
+     * @return The total debt owed for the supplied movie rental.
+     */
     public static Double calculateDebtOwedForMovieRental(MovieRental movieRental) {
         MovieEnum movie = performMovieValidation(movieRental).value();
 
@@ -19,20 +25,26 @@ public class MovieRentalUtils {
         };
     }
 
-    private static ValidationResult<MovieEnum> performMovieValidation(MovieRental movieRental) {
-        ValidationResult<MovieEnum> movieValidation = MovieRecordValidator.validateMovieRecord(movieRental);
-        if (!movieValidation.valid()) {
-            throw new IllegalArgumentException(movieValidation.errorMessage());
-        }
-        return movieValidation;
-    }
-
+    /**
+     * Calculates the frequent points for a movie rental based on the movie type and days rented.
+     *
+     * @param movieRental The movie rental details containing movie ID and days rented.
+     * @return The frequent points earned for the supplied movie rental.
+     */
     public static Integer calculateFrequentPoints(MovieRental movieRental) {
         if (MovieEnum.valueOf(movieRental.movieId()).getCode().equals("new") && movieRental.daysRented() > 2) {
             return 2;
         } else {
             return 1;
         }
+    }
+
+    private static ValidationResult<MovieEnum> performMovieValidation(MovieRental movieRental) {
+        ValidationResult<MovieEnum> movieValidation = MovieRecordValidator.validateMovieRecord(movieRental);
+        if (!movieValidation.valid()) {
+            throw new IllegalArgumentException(movieValidation.errorMessage());
+        }
+        return movieValidation;
     }
 
 }

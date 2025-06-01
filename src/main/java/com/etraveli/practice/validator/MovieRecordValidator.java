@@ -8,6 +8,7 @@ public class MovieRecordValidator {
 
     private static final int A_HUNDRED_YEARS_IN_DAYS = 365 * 100;
 
+    //P.S. This could have been a Validator chain (Chain of Responsibility), but I think this app is already overengineered enough! :D
     public static ValidationResult<MovieEnum> validateMovieRecord(MovieRental movieRental) {
         MovieEnum movie;
         try {
