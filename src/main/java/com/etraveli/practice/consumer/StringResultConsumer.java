@@ -1,10 +1,11 @@
-package com.etraveli.practice.consumer.impl;
+package com.etraveli.practice.consumer;
 
-import com.etraveli.practice.consumer.GenericConsumer;
 import org.springframework.stereotype.Component;
 
+import java.util.function.Consumer;
+
 @Component
-public class StringResultConsumer implements GenericConsumer<String> {
+public class StringResultConsumer implements Consumer<String> {
 
     @Override
     public void accept(String result) {
@@ -14,4 +15,5 @@ public class StringResultConsumer implements GenericConsumer<String> {
         }
         System.out.println("Success");
     }
+
 }

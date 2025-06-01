@@ -1,14 +1,14 @@
-package com.etraveli.practice.supplier.impl;
+package com.etraveli.practice.supplier;
 
 import com.etraveli.practice.dto.Customer;
 import com.etraveli.practice.dto.MovieRental;
-import com.etraveli.practice.supplier.GenericSupplier;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 @Component
-public class DefaultCustomerSupplier implements GenericSupplier<Customer> {
+public class DefaultCustomerSupplier implements Supplier<Customer> {
 
     @Override
     public Customer get() {
@@ -17,4 +17,5 @@ public class DefaultCustomerSupplier implements GenericSupplier<Customer> {
                 new MovieRental("F002", 1)
         ));
     }
+
 }

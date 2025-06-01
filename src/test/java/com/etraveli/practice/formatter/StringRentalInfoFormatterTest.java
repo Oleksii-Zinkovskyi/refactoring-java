@@ -14,12 +14,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StringRentalInfoFormatterTest {
 
     private static RentalInfoFormatter rentalInfoFormatter;
-    
+
     @BeforeAll
     public static void setUp() {
         rentalInfoFormatter = new StringRentalInfoFormatter();
     }
-    
+
     @Test
     public void givenValidCustomerAndFirstSetOfRentals_whenFormatOutput_thenReturnStringOutput() {
         String expected = "Rental Record for C. U. Stomer\n\tYou've Got Mail\t3.5\n\tMatrix\t2.0\nAmount owed is 5.5\nYou earned 2 frequent points\n";
@@ -29,7 +29,7 @@ public class StringRentalInfoFormatterTest {
                 .totalDebtAmountOwed(5.5)
                 .totalFrequentPoints(2)
                 .build();
-        
+
         String result = rentalInfoFormatter.formatOutput(output);
         assertThat(result).isEqualTo(expected);
     }
