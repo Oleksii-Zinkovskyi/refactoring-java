@@ -23,7 +23,8 @@ public class RentalInfoApplication {
         this.resultConsumer = stringResultConsumer;
     }
 
-    //P.S. Test task aside, there really shouldn't be any calls like this here as we'd want to have a REST endpoint handling calls to the service
+    //P.S. Test task aside, there shouldn't be any calls like this here as we'd want to initialize the app instead of feeding it a test case.
+    //P.S. I am keeping it here in order to preserve the pre-refactoring app input/output behavior, as the contract generally shouldn't change.
     public static void main(String[] args) {
         RentalInfoApplication rentalService = SpringApplication.run(RentalInfoApplication.class, args).getBean(RentalInfoApplication.class);
         rentalService.processStatement();

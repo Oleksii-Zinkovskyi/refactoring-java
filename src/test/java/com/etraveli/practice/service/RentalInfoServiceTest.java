@@ -1,10 +1,8 @@
 package com.etraveli.practice.service;
 
-import com.etraveli.practice.dto.Customer;
-import com.etraveli.practice.dto.MovieRental;
-import com.etraveli.practice.dto.MovieRentalInfoOutput;
-import com.etraveli.practice.dto.MovieRentalDebtRecord;
+import com.etraveli.practice.dto.*;
 import com.etraveli.practice.formatter.RentalInfoFormatter;
+import com.etraveli.practice.repository.MovieRepository;
 import com.etraveli.practice.service.impl.RentalInfoServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,14 +18,16 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;    //P.S. Blank "asterisk" imports are frowned upon, but for now I will let them stay
 
 /* P.S. Now that helper methods are exposed and tested separately, many of these tests are somewhat of an overkill*/
 public class RentalInfoServiceTest {
 
     @Mock
     private RentalInfoFormatter rentalInfoFormatter;
+
+    @Mock
+    private MovieRepository movieRepository;
 
     @InjectMocks
     private RentalInfoServiceImpl rentalInfoService;
@@ -38,7 +38,7 @@ public class RentalInfoServiceTest {
     public void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
 
-        Mockito.when(rentalInfoFormatter.formatOutput(Mockito.any())).thenReturn("Mocked Output");
+        when(rentalInfoFormatter.formatOutput(Mockito.any())).thenReturn("Mocked Output");
     }
 
     @AfterEach
@@ -51,6 +51,8 @@ public class RentalInfoServiceTest {
     @Test
     public void givenValidCustomerAndFirstSetOfRentals_whenGenerateStatement_thenReturnRentalInfoOutput() {
         Customer customer = new Customer("C. U. Stomer", Arrays.asList(new MovieRental("F001", 3), new MovieRental("F002", 1)));
+        when(movieRepository.getMovieById("F001")).thenReturn(new Movie("You've Got Mail", MovieCode.REGULAR));
+        when(movieRepository.getMovieById("F002")).thenReturn(new Movie("Matrix", MovieCode.REGULAR));
 
         rentalInfoService.generateStatementForCustomer(customer);
 
@@ -66,6 +68,8 @@ public class RentalInfoServiceTest {
     @Test
     public void givenValidCustomerAndSecondSetOfRentals_whenGenerateStatement_thenReturnRentalInfoOutput() {
         Customer customer = new Customer("C. U. Stomer", Arrays.asList(new MovieRental("F003", 3), new MovieRental("F004", 1)));
+        when(movieRepository.getMovieById("F003")).thenReturn(new Movie("Cars", MovieCode.CHILDREN));
+        when(movieRepository.getMovieById("F004")).thenReturn(new Movie("Fast & Furious X", MovieCode.NEW));
 
         rentalInfoService.generateStatementForCustomer(customer);
 
@@ -82,6 +86,8 @@ public class RentalInfoServiceTest {
     @Test
     public void givenValidCustomerWithDuplicateRentals_whenGenerateStatement_thenReturnRentalInfoOutput() {
         Customer customer = new Customer("C. U. Stomer", Arrays.asList(new MovieRental("F001", 3), new MovieRental("F001", 7), new MovieRental("F003", 1)));
+        when(movieRepository.getMovieById("F001")).thenReturn(new Movie("You've Got Mail", MovieCode.REGULAR));
+        when(movieRepository.getMovieById("F003")).thenReturn(new Movie("Cars", MovieCode.CHILDREN));
 
         rentalInfoService.generateStatementForCustomer(customer);
 
@@ -97,6 +103,9 @@ public class RentalInfoServiceTest {
     @Test
     public void givenValidCustomerWithManyRentals_whenGenerateStatement_thenReturnRentalInfoOutput() {
         Customer customer = new Customer("C. U. Stomer", Arrays.asList(new MovieRental("F001", 3), new MovieRental("F001", 7), new MovieRental("F003", 1), new MovieRental("F003", 15), new MovieRental("F001", 7), new MovieRental("F003", 0), new MovieRental("F004", 70), new MovieRental("F003", 12), new MovieRental("F004", 1)));
+        when(movieRepository.getMovieById("F001")).thenReturn(new Movie("You've Got Mail", MovieCode.REGULAR));
+        when(movieRepository.getMovieById("F003")).thenReturn(new Movie("Cars", MovieCode.CHILDREN));
+        when(movieRepository.getMovieById("F004")).thenReturn(new Movie("Fast & Furious X", MovieCode.NEW));
 
         rentalInfoService.generateStatementForCustomer(customer);
 
@@ -115,17 +124,19 @@ public class RentalInfoServiceTest {
 
     @Test
     public void givenValidCustomerWithInvalidRental_whenGenerateStatement_thenThrowException() {
-        Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("InvalidID", 3)));
+        Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("Invalid", 3)));
+        when(movieRepository.getMovieById("Invalid")).thenReturn(null);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 rentalInfoService.generateStatementForCustomer(customer));
 
-        assertThat(exception.getMessage()).isEqualTo("Invalid movie ID: InvalidID");
+        assertThat(exception.getMessage()).isEqualTo("Invalid movie ID: Invalid");
     }
 
     @Test
     public void givenValidCustomerWithZeroDaysRental_whenGenerateStatement_thenReturnRentalInfoOutput() {
         Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F001", 0)));
+        when(movieRepository.getMovieById("F001")).thenReturn(new Movie("You've Got Mail", MovieCode.REGULAR));
 
         rentalInfoService.generateStatementForCustomer(customer);
 
@@ -141,6 +152,7 @@ public class RentalInfoServiceTest {
     @Test
     public void givenValidCustomerWithMinDaysRental_whenGenerateStatement_thenThrowException() {
         Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F001", Integer.MIN_VALUE)));
+        when(movieRepository.getMovieById("F001")).thenReturn(new Movie("You've Got Mail", MovieCode.REGULAR));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 rentalInfoService.generateStatementForCustomer(customer));
@@ -151,6 +163,7 @@ public class RentalInfoServiceTest {
     @Test
     public void givenValidCustomerWithMaxDaysRental_whenGenerateStatement_thenThrowException() {
         Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F001", Integer.MAX_VALUE)));
+        when(movieRepository.getMovieById("F001")).thenReturn(new Movie("You've Got Mail", MovieCode.REGULAR));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 rentalInfoService.generateStatementForCustomer(customer));
