@@ -1,9 +1,9 @@
 package com.etraveli.practice.util;
 
-import com.etraveli.practice.dto.Movie;
-import com.etraveli.practice.dto.MovieCode;
-import com.etraveli.practice.dto.MovieRental;
+import com.etraveli.practice.dto.*;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,6 +69,35 @@ public class MovieRentalUtilsTest {
         assertThat(points).isEqualTo(1);
     }
 
-    //P.S. There could be more tests here, but both the comparator and sort methods are simple enough that they don't require extensive testing.
+    @Test
+    public void givenTwoCustomerRentalSummaries_whenMergeCustomerRentalSummaries_thenReturnsMergedSummary() {
+        MovieRentalDebtRecord movieRecordA = new MovieRentalDebtRecord("Movie A", 5.0);
+        MovieRentalDebtRecord movieRecordB = new MovieRentalDebtRecord("Movie B", 7.5);
+        CustomerRentalSummary summary1 = new CustomerRentalSummary(10.0, 2, List.of(movieRecordA));
+        CustomerRentalSummary summary2 = new CustomerRentalSummary(15.0, 3, List.of(movieRecordB));
+
+        CustomerRentalSummary mergedSummary = MovieRentalUtils.mergeCustomerRentalSummaries().apply(summary1, summary2);
+
+        assertThat(mergedSummary.totalDebtAmountOwed()).isEqualTo(25.0);
+        assertThat(mergedSummary.totalFrequentPoints()).isEqualTo(5);
+        assertThat(mergedSummary.movieRentalDebtRecords()).hasSize(2);
+        assertThat(mergedSummary.movieRentalDebtRecords().get(0)).isEqualTo(movieRecordA);
+        assertThat(mergedSummary.movieRentalDebtRecords().get(1)).isEqualTo(movieRecordB);
+    }
+
+    @Test
+    public void givenUnsortedCustomerRentalSummary_whenSortCustomerRentalSummary_thenReturnsSortedSummary() {
+        MovieRentalDebtRecord movieRecordA = new MovieRentalDebtRecord("Movie A", 5.0);
+        MovieRentalDebtRecord movieRecordB = new MovieRentalDebtRecord("Movie B", 7.5);
+        MovieRentalDebtRecord movieRecordC = new MovieRentalDebtRecord("Movie C", 3.0);
+        CustomerRentalSummary unsortedSummary = new CustomerRentalSummary(15.5, 4, List.of(movieRecordA, movieRecordB, movieRecordC));
+
+        CustomerRentalSummary sortedSummary = MovieRentalUtils.sortCustomerRentalSummary(unsortedSummary);
+
+        assertThat(sortedSummary.movieRentalDebtRecords()).hasSize(3);
+        assertThat(sortedSummary.movieRentalDebtRecords().get(0)).isEqualTo(movieRecordB);
+        assertThat(sortedSummary.movieRentalDebtRecords().get(1)).isEqualTo(movieRecordA);
+        assertThat(sortedSummary.movieRentalDebtRecords().get(2)).isEqualTo(movieRecordC);
+    }
 
 }
